@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "std140",
+    "std140_macros",
+]
