@@ -1,12 +1,13 @@
 [package]
 name = "std140"
-version = "0.1.0"
+version = "0.1.1"
 description = "GLSL interface block memory, layed-out according to the std140 convention, represented as Rust structs."
 keywords = ["GLSL", "OpenGL", "graphics"]
 authors = ["RSSchermer <roland0507@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/RSSchermer/std140.rs"
 homepage = "https://github.com/RSSchermer/std140.rs"
+documentation = "https://docs.rs/std140"
 license = "MIT"
 readme = "../README.md"
 

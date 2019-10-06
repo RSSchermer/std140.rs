@@ -21,34 +21,34 @@
 //! For GLSL primitive types, compatibility is defined by the following mapping from GLSL types to
 //! `std140` types:
 //!
-//! - `float`: `std140::float`
-//! - `vec2`: `std140::vec2`
-//! - `vec3`: `std140::vec3`
-//! - `vec4`: `std140::vec4`
-//! - `mat2`: `std140::mat2x2`
-//! - `mat3`: `std140::mat3x3`
-//! - `mat4`: `std140::mat4x4`
-//! - `mat2x2`: `std140::mat2x2`
-//! - `mat2x3`: `std140::mat2x3`
-//! - `mat2x4`: `std140::mat2x4`
-//! - `mat3x2`: `std140::mat3x2`
-//! - `mat3x3`: `std140::mat3x3`
-//! - `mat3x4`: `std140::mat3x4`
-//! - `mat4x2`: `std140::mat4x2`
-//! - `mat4x3`: `std140::mat4x3`
-//! - `mat4x4`: `std140::mat4x4`
-//! - `int`: `std140::int`
-//! - `ivec2`: `std140::ivec2`
-//! - `ivec3`: `std140::ivec3`
-//! - `ivec4`: `std140::ivec4`
-//! - `uint`: `std140::uint`
-//! - `uvec2`: `std140::uvec2`
-//! - `uvec3`: `std140::uvec3`
-//! - `uvec4`: `std140::uvec4`
-//! - `bool`: `std140::boolean`
-//! - `bvec2`: `std140::bvec2`
-//! - `bvec3`: `std140::bvec3`
-//! - `bvec4`: `std140::bvec4`
+//! - `float`: [float]
+//! - `vec2`: [vec2]
+//! - `vec3`: [vec3]
+//! - `vec4`: [vec4]
+//! - `mat2`: [mat2x2]
+//! - `mat3`: [mat3x3]
+//! - `mat4`: [mat4x4]
+//! - `mat2x2`: [mat2x2]
+//! - `mat2x3`: [mat2x3]
+//! - `mat2x4`: [mat2x4]
+//! - `mat3x2`: [mat3x2]
+//! - `mat3x3`: [mat3x3]
+//! - `mat3x4`: [mat3x4]
+//! - `mat4x2`: [mat4x2]
+//! - `mat4x3`: [mat4x3]
+//! - `mat4x4`: [mat4x4]
+//! - `int`: [int]
+//! - `ivec2`: [ivec2]
+//! - `ivec3`: [ivec3]
+//! - `ivec4`: [ivec4]
+//! - `uint`: [uint]
+//! - `uvec2`: [uvec2]
+//! - `uvec3`: [uvec3]
+//! - `uvec4`: [uvec4]
+//! - `bool`: [boolean]
+//! - `bvec2`: [bvec2]
+//! - `bvec3`: [bvec3]
+//! - `bvec4`: [bvec4]
 //!
 //! A GLSL struct type is compatible with a field if this field's type is a Rust struct marked with
 //! `#[std140::repr_std140]` and this struct's fields are pair-wise compatible with the GLSL
