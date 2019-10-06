@@ -77,7 +77,7 @@
 //! The following will produce a Rust struct instance with a compatible memory layout:
 //!
 //! ```rust
-//! // This library relies on the `const_generics` feature to represent std140 arrays. If you're
+//! // This library relies on the `const_generics` feature to represent std140 arrays. If your
 //! // types have array fields, then this feature needs to be enabled.
 //! #![feature(const_generics)]
 //!
