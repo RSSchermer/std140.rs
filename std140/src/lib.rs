@@ -15,8 +15,8 @@
 //! position. Position here relates to the order in which block members and struct fields are
 //! declared, e.g.: the 1st block member must be compatible with the 1st struct field, the 2nd block
 //! member must be compatible with the 2nd struct field, etc. The struct itself has to be marked
-//! with the `#[std140::repr_std140]` attribute: this ensures the rust compiler will correctly
-//! order and align the fields.
+//! with the [`#[repr_std140]`][repr_std140] attribute: this ensures the rust compiler will
+//! correctly order and align the fields.
 //!
 //! For GLSL primitive types, compatibility is defined by the following mapping from GLSL types to
 //! `std140` types:
@@ -25,18 +25,18 @@
 //! - `vec2`: [vec2]
 //! - `vec3`: [vec3]
 //! - `vec4`: [vec4]
-//! - `mat2`: [mat2x2]
-//! - `mat3`: [mat3x3]
-//! - `mat4`: [mat4x4]
-//! - `mat2x2`: [mat2x2]
-//! - `mat2x3`: [mat2x3]
-//! - `mat2x4`: [mat2x4]
-//! - `mat3x2`: [mat3x2]
-//! - `mat3x3`: [mat3x3]
-//! - `mat3x4`: [mat3x4]
-//! - `mat4x2`: [mat4x2]
-//! - `mat4x3`: [mat4x3]
-//! - `mat4x4`: [mat4x4]
+//! - `mat2`: [mat2x2][struct@mat2x2]
+//! - `mat3`: [mat3x3][struct@mat3x3]
+//! - `mat4`: [mat4x4][struct@mat4x4]
+//! - `mat2x2`: [mat2x2][struct@mat2x2]
+//! - `mat2x3`: [mat2x3][struct@mat2x3]
+//! - `mat2x4`: [mat2x4][struct@mat2x4]
+//! - `mat3x2`: [mat3x2][struct@mat3x2]
+//! - `mat3x3`: [mat3x3][struct@mat3x3]
+//! - `mat3x4`: [mat3x4][struct@mat3x4]
+//! - `mat4x2`: [mat4x2][struct@mat4x2]
+//! - `mat4x3`: [mat4x3][struct@mat4x3]
+//! - `mat4x4`: [mat4x4][struct@mat4x4]
 //! - `int`: [int]
 //! - `ivec2`: [ivec2]
 //! - `ivec3`: [ivec3]
@@ -51,7 +51,7 @@
 //! - `bvec4`: [bvec4]
 //!
 //! A GLSL struct type is compatible with a field if this field's type is a Rust struct marked with
-//! `#[std140::repr_std140]` and this struct's fields are pair-wise compatible with the GLSL
+//! [`#[repr_std140]`][repr_std140] and this struct's fields are pair-wise compatible with the GLSL
 //! struct field in the corresponding position.
 //!
 //! A GLSL array of GLSL type `T` with compatible type `T_c` (as defined above) and length `N` is
@@ -117,10 +117,51 @@
 //!
 //! Note that although the field names match the block member names in this example, this is not
 //! strictly necessary: only pairwise field-type compatibility is required.
+//!
+//! [repr_std140]: attr.repr_std140.html
 
 use std::ops::{Deref, DerefMut, Index, IndexMut};
 
-/// Initializes a `std140` array.
+/// Attribute macro that can be applied to a struct to ensure its representation is compatible with
+/// the std140 memory layout convention.
+///
+/// Can only be applied to a struct if all of its fields implement [ReprStd140].
+///
+/// Any struct marked with this attribute will automatically implement [Std140Struct]
+///
+/// # Example
+///
+/// ```rust
+/// #[std140::repr_std140]
+/// struct PointLight {
+///     position: std140::vec3,
+///     intensity: std140::float,
+/// }
+/// ```
+pub use std140_macros::repr_std140;
+
+/// Marker trait for types that can be used as fields in structs marked with
+/// [`#[repr_std140]`][repr_std140].
+///
+/// [repr_std140]: attr.repr_std140.html
+pub unsafe trait ReprStd140 {}
+
+/// Marker trait for types that can be used as the element type for std140 [array][struct@array]s.
+pub unsafe trait Std140ArrayElement: ReprStd140 {}
+
+/// Marker trait for struct types that were marked with [`#[repr_std140]`][repr_std140].
+///
+/// [repr_std140]: attr.repr_std140.html
+pub unsafe trait Std140Struct {}
+
+unsafe impl<T> ReprStd140 for T where T: Std140Struct {}
+unsafe impl<T> Std140ArrayElement for T where T: Std140Struct {}
+
+/// Represents an std140 compatible array.
+///
+/// All elements in an std140 array are aligned to at least 16 bytes.
+///
+/// The [array!][macro@array] macro may be used to initialize an array.
 ///
 /// # Example
 ///
@@ -130,22 +171,6 @@ use std::ops::{Deref, DerefMut, Index, IndexMut};
 ///     std140::vec2(0.0, 1.0),
 /// ];
 /// ```
-pub use crate::std140_array as array;
-
-pub use std140_macros::repr_std140;
-
-/// Marker trait for types that can be used as fields in structs marked with `#[repr_std140]`.
-pub unsafe trait ReprStd140 {}
-
-/// Marker trait for types that can be used as the element type for std140 [array]s.
-pub unsafe trait Std140ArrayElement: ReprStd140 {}
-
-/// Marker trait for struct types that were marked with `#[repr_std140]`.
-pub unsafe trait Std140Struct {}
-
-unsafe impl<T> ReprStd140 for T where T: Std140Struct {}
-unsafe impl<T> Std140ArrayElement for T where T: Std140Struct {}
-
 #[derive(Clone, Copy)]
 pub struct array<T, const LEN: usize>
     where
@@ -196,9 +221,18 @@ pub struct ArrayElementWrapper<T>
     pub element: T,
 }
 
-#[doc(hidden)]
+/// Initializes a `std140` [array][struct@array].
+///
+/// # Example
+///
+/// ```
+/// let std140_array: std140::array<std140::vec2, 2> = std140::array![
+///     std140::vec2(1.0, 0.0),
+///     std140::vec2(0.0, 1.0),
+/// ];
+/// ```
 #[macro_export]
-macro_rules! std140_array {
+macro_rules! array {
     ($elem:expr; $n:expr) => {
         $crate::from_wrapped([$crate::std140::ArrayElementWrapper {
             element: $elem
@@ -213,11 +247,18 @@ macro_rules! std140_array {
             ),*
         ])
     };
-    ($($x:expr,)*) => ($crate::std140_array![$($x),*])
+    ($($x:expr,)*) => ($crate::array![$($x),*])
 }
 
 unsafe impl<T, const LEN: usize> ReprStd140 for array<T, { LEN }> where T: Std140ArrayElement {}
 
+/// A 32-bit floating point value.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::float(0.5);
+/// ```
 #[repr(C, align(4))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct float(pub f32);
@@ -225,6 +266,13 @@ pub struct float(pub f32);
 unsafe impl ReprStd140 for float {}
 unsafe impl Std140ArrayElement for float {}
 
+/// A column vector of 2 [float] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::vec2(0.0, 1.0);
+/// ```
 #[repr(C, align(8))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct vec2(pub f32, pub f32);
@@ -254,6 +302,13 @@ impl IndexMut<usize> for vec2 {
     }
 }
 
+/// A column vector of 3 [float] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::vec3(0.0, 0.0, 1.0);
+/// ```
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct vec3(pub f32, pub f32, pub f32);
@@ -285,6 +340,13 @@ impl IndexMut<usize> for vec3 {
     }
 }
 
+/// A column vector of 4 [float] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::vec4(0.0, 0.0, 0.0, 1.0);
+/// ```
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct vec4(pub f32, pub f32, pub f32, pub f32);
@@ -318,6 +380,13 @@ impl IndexMut<usize> for vec4 {
     }
 }
 
+/// A 32-bit signed integer value.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::int(1);
+/// ```
 #[repr(C, align(4))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct int(pub i32);
@@ -325,6 +394,13 @@ pub struct int(pub i32);
 unsafe impl ReprStd140 for int {}
 unsafe impl Std140ArrayElement for int {}
 
+/// A column vector of 2 [int] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::ivec2(0, 1);
+/// ```
 #[repr(C, align(8))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct ivec2(pub i32, pub i32);
@@ -354,6 +430,13 @@ impl IndexMut<usize> for ivec2 {
     }
 }
 
+/// A column vector of 3 [int] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::ivec3(0, 0, 1);
+/// ```
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct ivec3(pub i32, pub i32, pub i32);
@@ -385,6 +468,13 @@ impl IndexMut<usize> for ivec3 {
     }
 }
 
+/// A column vector of 4 [int] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::ivec4(0, 0, 0, 1);
+/// ```
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct ivec4(pub i32, pub i32, pub i32, pub i32);
@@ -418,6 +508,13 @@ impl IndexMut<usize> for ivec4 {
     }
 }
 
+/// A 32-bit unsigned integer value.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::uint(1);
+/// ```
 #[repr(C, align(4))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct uint(pub u32);
@@ -425,6 +522,13 @@ pub struct uint(pub u32);
 unsafe impl ReprStd140 for uint {}
 unsafe impl Std140ArrayElement for uint {}
 
+/// A column vector of 2 [uint] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::uvec2(0, 1);
+/// ```
 #[repr(C, align(8))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct uvec2(pub u32, pub u32);
@@ -454,6 +558,13 @@ impl IndexMut<usize> for uvec2 {
     }
 }
 
+/// A column vector of 3 [uint] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::uvec3(0, 0, 1);
+/// ```
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct uvec3(pub u32, pub u32, pub u32);
@@ -485,6 +596,13 @@ impl IndexMut<usize> for uvec3 {
     }
 }
 
+/// A column vector of 4 [uint] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::uvec4(0, 0, 0, 1);
+/// ```
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct uvec4(pub u32, pub u32, pub u32, pub u32);
@@ -518,6 +636,16 @@ impl IndexMut<usize> for uvec4 {
     }
 }
 
+/// A 32-bit boolean value.
+///
+/// [boolean::False] is stored identically to a [uint] of `0`; [boolean::True] is stored identically
+/// to a [uint] of `1`.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::uint(1);
+/// ```
 #[repr(u32)]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum boolean {
@@ -537,6 +665,13 @@ impl From<bool> for boolean {
     }
 }
 
+/// A column vector of 2 [boolean] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::bvec2(std140::boolean::False, std140::boolean::True);
+/// ```
 #[repr(C, align(8))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct bvec2(pub boolean, pub boolean);
@@ -566,6 +701,13 @@ impl IndexMut<usize> for bvec2 {
     }
 }
 
+/// A column vector of 3 [boolean] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::bvec3(std140::boolean::False, std140::boolean::False, std140::boolean::True);
+/// ```
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct bvec3(pub boolean, pub boolean, pub boolean);
@@ -597,6 +739,18 @@ impl IndexMut<usize> for bvec3 {
     }
 }
 
+/// A column vector of 4 [boolean] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::bvec4(
+///     std140::boolean::False,
+///     std140::boolean::False,
+///     std140::boolean::False,
+///     std140::boolean::True
+/// );
+/// ```
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct bvec4(pub boolean, pub boolean, pub boolean, pub boolean);
@@ -630,11 +784,26 @@ impl IndexMut<usize> for bvec4 {
     }
 }
 
+/// A matrix with 2 columns and 2 rows, represented by 2 [vec2] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::mat2x2(
+///     std140::vec2(0.0, 1.0),
+///     std140::vec2(0.0, 1.0),
+/// );
+/// ```
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat2x2 {
     columns: array<vec2, 2>,
 }
 
+/// Initializes a [mat2x2][struct@mat2x2]
+///
+/// # Example
+///
+/// See [mat2x2][struct@mat2x2].
 pub fn mat2x2(c0: vec2, c1: vec2) -> mat2x2 {
     mat2x2 {
         columns: array![c0, c1],
@@ -658,11 +827,26 @@ impl DerefMut for mat2x2 {
     }
 }
 
+/// A matrix with 2 columns and 3 rows, represented by 2 [vec3] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::mat2x3(
+///     std140::vec3(0.0, 0.0, 1.0),
+///     std140::vec3(0.0, 0.0, 1.0),
+/// );
+/// ```
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat2x3 {
     columns: array<vec3, 2>,
 }
 
+/// Initializes a [mat2x3][struct@mat2x3]
+///
+/// # Example
+///
+/// See [mat2x3][struct@mat2x3].
 pub fn mat2x3(c0: vec3, c1: vec3) -> mat2x3 {
     mat2x3 {
         columns: array![c0, c1],
@@ -686,11 +870,26 @@ impl DerefMut for mat2x3 {
     }
 }
 
+/// A matrix with 2 columns and 4 rows, represented by 2 [vec4] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::mat2x4(
+///     std140::vec4(0.0, 0.0, 0.0, 1.0),
+///     std140::vec4(0.0, 0.0, 0.0, 1.0),
+/// );
+/// ```
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat2x4 {
     columns: array<vec4, 2>,
 }
 
+/// Initializes a [mat2x4][struct@mat2x4]
+///
+/// # Example
+///
+/// See [mat2x4][struct@mat2x4].
 pub fn mat2x4(c0: vec4, c1: vec4) -> mat2x4 {
     mat2x4 {
         columns: array![c0, c1],
@@ -714,11 +913,27 @@ impl DerefMut for mat2x4 {
     }
 }
 
+/// A matrix with 3 columns and 2 rows, represented by 3 [vec2] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::mat3x2(
+///     std140::vec2(0.0, 1.0),
+///     std140::vec2(0.0, 1.0),
+///     std140::vec2(0.0, 1.0),
+/// );
+/// ```
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat3x2 {
     columns: array<vec2, 3>,
 }
 
+/// Initializes a [mat3x2][struct@mat3x2]
+///
+/// # Example
+///
+/// See [mat3x2][struct@mat3x2].
 pub fn mat3x2(c0: vec2, c1: vec2, c2: vec2) -> mat3x2 {
     mat3x2 {
         columns: array![c0, c1, c2],
@@ -742,11 +957,27 @@ impl DerefMut for mat3x2 {
     }
 }
 
+/// A matrix with 3 columns and 3 rows, represented by 3 [vec3] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::mat3x3(
+///     std140::vec3(0.0, 0.0, 1.0),
+///     std140::vec3(0.0, 0.0, 1.0),
+///     std140::vec3(0.0, 0.0, 1.0),
+/// );
+/// ```
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat3x3 {
     columns: array<vec3, 3>,
 }
 
+/// Initializes a [mat3x3][struct@mat3x3]
+///
+/// # Example
+///
+/// See [mat3x3][struct@mat3x3].
 pub fn mat3x3(c0: vec3, c1: vec3, c2: vec3) -> mat3x3 {
     mat3x3 {
         columns: array![c0, c1, c2],
@@ -770,11 +1001,27 @@ impl DerefMut for mat3x3 {
     }
 }
 
+/// A matrix with 3 columns and 4 rows, represented by 3 [vec4] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::mat3x4(
+///     std140::vec4(0.0, 0.0, 0.0, 1.0),
+///     std140::vec4(0.0, 0.0, 0.0, 1.0),
+///     std140::vec4(0.0, 0.0, 0.0, 1.0),
+/// );
+/// ```
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat3x4 {
     columns: array<vec4, 3>,
 }
 
+/// Initializes a [mat3x4][struct@mat3x4]
+///
+/// # Example
+///
+/// See [mat3x4][struct@mat3x4].
 pub fn mat3x4(c0: vec4, c1: vec4, c2: vec4) -> mat3x4 {
     mat3x4 {
         columns: array![c0, c1, c2],
@@ -798,11 +1045,28 @@ impl DerefMut for mat3x4 {
     }
 }
 
+/// A matrix with 4 columns and 2 rows, represented by 4 [vec2] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::mat4x2(
+///     std140::vec2(0.0, 1.0),
+///     std140::vec2(0.0, 1.0),
+///     std140::vec2(0.0, 1.0),
+///     std140::vec2(0.0, 1.0),
+/// );
+/// ```
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat4x2 {
     columns: array<vec2, 4>,
 }
 
+/// Initializes a [mat4x2][struct@mat4x2]
+///
+/// # Example
+///
+/// See [mat4x2][struct@mat4x2].
 pub fn mat4x2(c0: vec2, c1: vec2, c2: vec2, c3: vec2) -> mat4x2 {
     mat4x2 {
         columns: array![c0, c1, c2, c3],
@@ -826,11 +1090,28 @@ impl DerefMut for mat4x2 {
     }
 }
 
+/// A matrix with 4 columns and 3 rows, represented by 4 [vec3] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::mat4x3(
+///     std140::vec3(0.0, 0.0, 1.0),
+///     std140::vec3(0.0, 0.0, 1.0),
+///     std140::vec3(0.0, 0.0, 1.0),
+///     std140::vec3(0.0, 0.0, 1.0),
+/// );
+/// ```
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat4x3 {
     columns: array<vec3, 4>,
 }
 
+/// Initializes a [mat4x3][struct@mat4x3]
+///
+/// # Example
+///
+/// See [mat4x3][struct@mat4x3].
 pub fn mat4x3(c0: vec3, c1: vec3, c2: vec3, c3: vec3) -> mat4x3 {
     mat4x3 {
         columns: array![c0, c1, c2, c3],
@@ -854,11 +1135,28 @@ impl DerefMut for mat4x3 {
     }
 }
 
+/// A matrix with 4 columns and 4 rows, represented by 4 [vec4] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::mat4x4(
+///     std140::vec4(0.0, 0.0, 0.0, 1.0),
+///     std140::vec4(0.0, 0.0, 0.0, 1.0),
+///     std140::vec4(0.0, 0.0, 0.0, 1.0),
+///     std140::vec4(0.0, 0.0, 0.0, 1.0),
+/// );
+/// ```
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat4x4 {
     columns: array<vec4, 4>,
 }
 
+/// Initializes a [mat4x4][struct@mat4x4]
+///
+/// # Example
+///
+/// See [mat4x4][struct@mat4x4].
 pub fn mat4x4(c0: vec4, c1: vec4, c2: vec4, c3: vec4) -> mat4x4 {
     mat4x4 {
         columns: array![c0, c1, c2, c3],
