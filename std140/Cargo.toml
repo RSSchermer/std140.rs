@@ -1,10 +1,14 @@
 [package]
 name = "std140"
 version = "0.1.0"
+description = "GLSL interface block memory, layed-out according to the std140 convention, represented as Rust structs."
+keywords = ["GLSL", "OpenGL", "graphics"]
 authors = ["RSSchermer <roland0507@gmail.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+repository = "https://github.com/RSSchermer/std140.rs"
+homepage = "https://github.com/RSSchermer/std140.rs"
+license = "MIT"
+readme = "../README.md"
 
 [dependencies]
-std140-macros = { version = "0.1.0", path = "../std140_macros" }
+std140-macros = "0.1.0"
