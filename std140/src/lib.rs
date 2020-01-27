@@ -173,15 +173,15 @@ unsafe impl<T> Std140ArrayElement for T where T: Std140Struct {}
 /// ```
 #[derive(Clone, Copy)]
 pub struct array<T, const LEN: usize>
-    where
-        T: Std140ArrayElement,
+where
+    T: Std140ArrayElement,
 {
     internal: [ArrayElementWrapper<T>; LEN],
 }
 
 impl<T, const LEN: usize> array<T, { LEN }>
-    where
-        T: Std140ArrayElement,
+where
+    T: Std140ArrayElement,
 {
     #[doc(hidden)]
     pub fn from_wrapped(wrapped: [ArrayElementWrapper<T>; LEN]) -> Self {
@@ -190,8 +190,8 @@ impl<T, const LEN: usize> array<T, { LEN }>
 }
 
 impl<T, const LEN: usize> PartialEq for array<T, { LEN }>
-    where
-        T: Std140ArrayElement + PartialEq,
+where
+    T: Std140ArrayElement + PartialEq,
 {
     fn eq(&self, other: &Self) -> bool {
         for i in 0..LEN {
@@ -215,8 +215,8 @@ impl<T, const LEN: usize> PartialEq for array<T, { LEN }>
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(C, align(16))]
 pub struct ArrayElementWrapper<T>
-    where
-        T: Std140ArrayElement,
+where
+    T: Std140ArrayElement,
 {
     pub element: T,
 }
@@ -277,6 +277,13 @@ unsafe impl Std140ArrayElement for float {}
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct vec2(pub f32, pub f32);
 
+impl vec2 {
+    /// Creates a new [vec2] with zeros in all positions.
+    pub fn zero() -> Self {
+        vec2(0.0, 0.0)
+    }
+}
+
 unsafe impl ReprStd140 for vec2 {}
 unsafe impl Std140ArrayElement for vec2 {}
 
@@ -312,6 +319,13 @@ impl IndexMut<usize> for vec2 {
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct vec3(pub f32, pub f32, pub f32);
+
+impl vec3 {
+    /// Creates a new [vec3] with zeros in all positions.
+    pub fn zero() -> Self {
+        vec3(0.0, 0.0, 0.0)
+    }
+}
 
 unsafe impl ReprStd140 for vec3 {}
 unsafe impl Std140ArrayElement for vec3 {}
@@ -350,6 +364,13 @@ impl IndexMut<usize> for vec3 {
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct vec4(pub f32, pub f32, pub f32, pub f32);
+
+impl vec4 {
+    /// Creates a new [vec4] with zeros in all positions.
+    pub fn zero() -> Self {
+        vec4(0.0, 0.0, 0.0, 0.0)
+    }
+}
 
 unsafe impl ReprStd140 for vec4 {}
 unsafe impl Std140ArrayElement for vec4 {}
@@ -405,6 +426,13 @@ unsafe impl Std140ArrayElement for int {}
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct ivec2(pub i32, pub i32);
 
+impl ivec2 {
+    /// Creates a new [ivec2] with zeros in all positions.
+    pub fn zero() -> Self {
+        ivec2(0, 0)
+    }
+}
+
 unsafe impl ReprStd140 for ivec2 {}
 unsafe impl Std140ArrayElement for ivec2 {}
 
@@ -440,6 +468,13 @@ impl IndexMut<usize> for ivec2 {
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct ivec3(pub i32, pub i32, pub i32);
+
+impl ivec3 {
+    /// Creates a new [ivec3] with zeros in all positions.
+    pub fn zero() -> Self {
+        ivec3(0, 0, 0)
+    }
+}
 
 unsafe impl ReprStd140 for ivec3 {}
 unsafe impl Std140ArrayElement for ivec3 {}
@@ -478,6 +513,13 @@ impl IndexMut<usize> for ivec3 {
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct ivec4(pub i32, pub i32, pub i32, pub i32);
+
+impl ivec4 {
+    /// Creates a new [ivec4] with zeros in all positions.
+    pub fn zero() -> Self {
+        ivec4(0, 0, 0, 0)
+    }
+}
 
 unsafe impl ReprStd140 for ivec4 {}
 unsafe impl Std140ArrayElement for ivec4 {}
@@ -533,6 +575,13 @@ unsafe impl Std140ArrayElement for uint {}
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct uvec2(pub u32, pub u32);
 
+impl uvec2 {
+    /// Creates a new [uvec2] with zeros in all positions.
+    pub fn zero() -> Self {
+        uvec2(0, 0)
+    }
+}
+
 unsafe impl ReprStd140 for uvec2 {}
 unsafe impl Std140ArrayElement for uvec2 {}
 
@@ -568,6 +617,13 @@ impl IndexMut<usize> for uvec2 {
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct uvec3(pub u32, pub u32, pub u32);
+
+impl uvec3 {
+    /// Creates a new [uvec3] with zeros in all positions.
+    pub fn zero() -> Self {
+        uvec3(0, 0, 0)
+    }
+}
 
 unsafe impl ReprStd140 for uvec3 {}
 unsafe impl Std140ArrayElement for uvec3 {}
@@ -606,6 +662,13 @@ impl IndexMut<usize> for uvec3 {
 #[repr(C, align(16))]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct uvec4(pub u32, pub u32, pub u32, pub u32);
+
+impl uvec4 {
+    /// Creates a new [uvec4] with zeros in all positions.
+    pub fn zero() -> Self {
+        uvec4(0, 0, 0, 0)
+    }
+}
 
 unsafe impl ReprStd140 for uvec4 {}
 unsafe impl Std140ArrayElement for uvec4 {}
@@ -799,6 +862,13 @@ pub struct mat2x2 {
     columns: array<vec2, 2>,
 }
 
+impl mat2x2 {
+    /// Creates a new [mat2x2] with zeros in all positions.
+    pub fn zero() -> Self {
+        mat2x2(vec2::zero(), vec2::zero())
+    }
+}
+
 /// Initializes a [mat2x2][struct@mat2x2]
 ///
 /// # Example
@@ -842,6 +912,13 @@ pub struct mat2x3 {
     columns: array<vec3, 2>,
 }
 
+impl mat2x3 {
+    /// Creates a new [mat2x3] with zeros in all positions.
+    pub fn zero() -> Self {
+        mat2x3(vec3::zero(), vec3::zero())
+    }
+}
+
 /// Initializes a [mat2x3][struct@mat2x3]
 ///
 /// # Example
@@ -883,6 +960,13 @@ impl DerefMut for mat2x3 {
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat2x4 {
     columns: array<vec4, 2>,
+}
+
+impl mat2x4 {
+    /// Creates a new [mat2x4] with zeros in all positions.
+    pub fn zero() -> Self {
+        mat2x4(vec4::zero(), vec4::zero())
+    }
 }
 
 /// Initializes a [mat2x4][struct@mat2x4]
@@ -929,6 +1013,13 @@ pub struct mat3x2 {
     columns: array<vec2, 3>,
 }
 
+impl mat3x2 {
+    /// Creates a new [mat3x2] with zeros in all positions.
+    pub fn zero() -> Self {
+        mat3x2(vec2::zero(), vec2::zero(), vec2::zero())
+    }
+}
+
 /// Initializes a [mat3x2][struct@mat3x2]
 ///
 /// # Example
@@ -973,6 +1064,13 @@ pub struct mat3x3 {
     columns: array<vec3, 3>,
 }
 
+impl mat3x3 {
+    /// Creates a new [mat3x3] with zeros in all positions.
+    pub fn zero() -> Self {
+        mat3x3(vec3::zero(), vec3::zero(), vec3::zero())
+    }
+}
+
 /// Initializes a [mat3x3][struct@mat3x3]
 ///
 /// # Example
@@ -1015,6 +1113,13 @@ impl DerefMut for mat3x3 {
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat3x4 {
     columns: array<vec4, 3>,
+}
+
+impl mat3x4 {
+    /// Creates a new [mat3x4] with zeros in all positions.
+    pub fn zero() -> Self {
+        mat3x4(vec4::zero(), vec4::zero(), vec4::zero())
+    }
 }
 
 /// Initializes a [mat3x4][struct@mat3x4]
@@ -1062,6 +1167,13 @@ pub struct mat4x2 {
     columns: array<vec2, 4>,
 }
 
+impl mat4x2 {
+    /// Creates a new [mat4x2] with zeros in all positions.
+    pub fn zero() -> Self {
+        mat4x2(vec2::zero(), vec2::zero(), vec2::zero(), vec2::zero())
+    }
+}
+
 /// Initializes a [mat4x2][struct@mat4x2]
 ///
 /// # Example
@@ -1107,6 +1219,13 @@ pub struct mat4x3 {
     columns: array<vec3, 4>,
 }
 
+impl mat4x3 {
+    /// Creates a new [mat4x3] with zeros in all positions.
+    pub fn zero() -> Self {
+        mat4x3(vec3::zero(), vec3::zero(), vec3::zero(), vec3::zero())
+    }
+}
+
 /// Initializes a [mat4x3][struct@mat4x3]
 ///
 /// # Example
@@ -1150,6 +1269,13 @@ impl DerefMut for mat4x3 {
 #[derive(Clone, Copy, PartialEq)]
 pub struct mat4x4 {
     columns: array<vec4, 4>,
+}
+
+impl mat4x4 {
+    /// Creates a new [mat4x4] with zeros in all positions.
+    pub fn zero() -> Self {
+        mat4x4(vec4::zero(), vec4::zero(), vec4::zero(), vec4::zero())
+    }
 }
 
 /// Initializes a [mat4x4][struct@mat4x4]
