@@ -1,6 +1,6 @@
 [package]
 name = "std140"
-version = "0.1.2"
+version = "0.2.0"
 description = "GLSL interface block memory, layed-out according to the std140 convention, represented as Rust structs."
 keywords = ["GLSL", "OpenGL", "graphics"]
 authors = ["RSSchermer <roland0507@gmail.com>"]
