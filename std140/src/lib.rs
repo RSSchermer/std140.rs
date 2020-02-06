@@ -234,7 +234,7 @@ where
 #[macro_export]
 macro_rules! array {
     ($elem:expr; $n:expr) => {
-        $crate::from_wrapped([$crate::std140::ArrayElementWrapper {
+        $crate::array::from_wrapped([$crate::std140::ArrayElementWrapper {
             element: $elem
         }; $n])
     };
