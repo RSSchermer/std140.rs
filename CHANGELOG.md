@@ -1,3 +1,7 @@
+# 0.2.3
+
+Removes dependencies on nightly features, will now compile on Rust stable 1.51.
+
 # 0.2.0
 
 Add `zero` initializers to numerical types for convenience.
