@@ -20,7 +20,7 @@ pub fn expand_repr_std140(input: &DeriveInput) -> Result<TokenStream, String> {
             let ty = &field.ty;
             let span = field.span();
 
-            quote_spanned!(span=> assert_repr_std140::<#ty>();)
+            quote_spanned!(span=> impl assert_repr_std140 for #ty {})
         });
 
         let suffix = struct_name.to_string().trim_start_matches("r#").to_owned();
@@ -30,7 +30,7 @@ pub fn expand_repr_std140(input: &DeriveInput) -> Result<TokenStream, String> {
         );
 
         let asserts = quote! {
-            const fn assert_repr_std140<T: #mod_path::ReprStd140>() {}
+            trait assert_repr_std140: #mod_path::ReprStd140 {}
 
             #(#asserts)*
         };
