@@ -1,4 +1,3 @@
-#![feature(const_generics)]
 #![allow(non_camel_case_types)]
 
 //! This module contains types that may be used to define Rust struct types that match the GLSL
@@ -77,10 +76,6 @@
 //! The following will produce a Rust struct instance with a compatible memory layout:
 //!
 //! ```rust
-//! // This library relies on the `const_generics` feature to represent std140 arrays. If your
-//! // types have array fields, then this feature needs to be enabled.
-//! #![feature(const_generics)]
-//!
 //! #[std140::repr_std140]
 //! struct PointLight {
 //!     position: std140::vec3,
