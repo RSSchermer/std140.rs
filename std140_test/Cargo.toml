@@ -1,0 +1,12 @@
+[package]
+name = "std140-test"
+version = "0.1.0"
+authors = ["Roland Schermer <roland0507@gmail.com>"]
+edition = "2018"
+publish = false
+repository = "https://github.com/RSSchermer/std140.rs"
+license = "MIT"
+
+[dev-dependencies]
+compiletest_rs = "0.6.0"
+std140 = { path = "../std140" }
