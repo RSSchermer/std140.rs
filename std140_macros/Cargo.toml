@@ -1,6 +1,6 @@
 [package]
 name = "std140-macros"
-version = "0.1.1"
+version = "0.1.2"
 description = "Procedural macros for the std140 crate."
 authors = ["Roland Schermer <roland0507@gmail.com>"]
 edition = "2018"
