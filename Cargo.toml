@@ -2,4 +2,5 @@
 members = [
     "std140",
     "std140_macros",
+    "std140_test"
 ]
