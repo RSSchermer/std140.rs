@@ -115,6 +115,7 @@
 //!
 //! [repr_std140]: attr.repr_std140.html
 
+use std::fmt;
 use std::ops::{Deref, DerefMut, Index, IndexMut};
 
 /// Attribute macro that can be applied to a struct to ensure its representation is compatible with
@@ -199,6 +200,12 @@ where
     }
 }
 
+impl<T, const LEN: usize> fmt::Debug for array<T, { LEN }> where T: Std140ArrayElement + fmt::Debug {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_list().entries(self.internal.iter()).finish()
+    }
+}
+
 // TODO: something like this? (if that ever becomes possible)
 //impl<T, const LEN: usize> Unsize<slice<T>> for array<T, {LEN}> {}
 //
@@ -214,6 +221,12 @@ where
     T: Std140ArrayElement,
 {
     pub element: T,
+}
+
+impl<T> fmt::Debug for ArrayElementWrapper<T> where T: Std140ArrayElement + fmt::Debug {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        <T as fmt::Debug>::fmt(&self.element, f)
+    }
 }
 
 /// Initializes a `std140` [array][struct@array].
@@ -892,6 +905,12 @@ impl DerefMut for mat2x2 {
     }
 }
 
+impl fmt::Debug for mat2x2 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("mat2x2{:?}", &self.columns))
+    }
+}
+
 /// A matrix with 2 columns and 3 rows, represented by 2 [vec3] vectors.
 ///
 /// # Example
@@ -942,6 +961,12 @@ impl DerefMut for mat2x3 {
     }
 }
 
+impl fmt::Debug for mat2x3 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("mat2x3{:?}", &self.columns))
+    }
+}
+
 /// A matrix with 2 columns and 4 rows, represented by 2 [vec4] vectors.
 ///
 /// # Example
@@ -989,6 +1014,12 @@ impl Deref for mat2x4 {
 impl DerefMut for mat2x4 {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.columns
+    }
+}
+
+impl fmt::Debug for mat2x4 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("mat2x4{:?}", &self.columns))
     }
 }
 
@@ -1043,6 +1074,12 @@ impl DerefMut for mat3x2 {
     }
 }
 
+impl fmt::Debug for mat3x2 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("mat3x2{:?}", &self.columns))
+    }
+}
+
 /// A matrix with 3 columns and 3 rows, represented by 3 [vec3] vectors.
 ///
 /// # Example
@@ -1094,6 +1131,12 @@ impl DerefMut for mat3x3 {
     }
 }
 
+impl fmt::Debug for mat3x3 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("mat3x3{:?}", &self.columns))
+    }
+}
+
 /// A matrix with 3 columns and 4 rows, represented by 3 [vec4] vectors.
 ///
 /// # Example
@@ -1142,6 +1185,12 @@ impl Deref for mat3x4 {
 impl DerefMut for mat3x4 {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.columns
+    }
+}
+
+impl fmt::Debug for mat3x4 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("mat3x4{:?}", &self.columns))
     }
 }
 
@@ -1197,6 +1246,12 @@ impl DerefMut for mat4x2 {
     }
 }
 
+impl fmt::Debug for mat4x2 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("mat4x2{:?}", &self.columns))
+    }
+}
+
 /// A matrix with 4 columns and 3 rows, represented by 4 [vec3] vectors.
 ///
 /// # Example
@@ -1249,6 +1304,12 @@ impl DerefMut for mat4x3 {
     }
 }
 
+impl fmt::Debug for mat4x3 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("mat4x3{:?}", &self.columns))
+    }
+}
+
 /// A matrix with 4 columns and 4 rows, represented by 4 [vec4] vectors.
 ///
 /// # Example
@@ -1298,5 +1359,11 @@ impl Deref for mat4x4 {
 impl DerefMut for mat4x4 {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.columns
+    }
+}
+
+impl fmt::Debug for mat4x4 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("mat4x4{:?}", &self.columns))
     }
 }
