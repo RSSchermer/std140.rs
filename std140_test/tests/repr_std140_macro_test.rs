@@ -10,9 +10,7 @@ struct PointLight {
 struct Uniforms {
     transform: std140::mat4x4,
     ambient_light_color: std140::vec3,
-    lights: std140::array<PointLight, 2>
+    lights: std140::array<PointLight, 2>,
 }
 
-fn main() {
-
-}
+fn main() {}
