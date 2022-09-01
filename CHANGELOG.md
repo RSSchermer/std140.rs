@@ -1,3 +1,7 @@
+# 0.2.6
+
+Adds double precision floating point types (`double`, `dvec*`, `dmat*`).
+
 # 0.2.5
 
 Adds `Debug` implementations for array and matrix types.
