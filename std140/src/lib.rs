@@ -200,7 +200,10 @@ where
     }
 }
 
-impl<T, const LEN: usize> fmt::Debug for array<T, { LEN }> where T: Std140ArrayElement + fmt::Debug {
+impl<T, const LEN: usize> fmt::Debug for array<T, { LEN }>
+where
+    T: Std140ArrayElement + fmt::Debug,
+{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_list().entries(self.internal.iter()).finish()
     }
@@ -223,7 +226,10 @@ where
     pub element: T,
 }
 
-impl<T> fmt::Debug for ArrayElementWrapper<T> where T: Std140ArrayElement + fmt::Debug {
+impl<T> fmt::Debug for ArrayElementWrapper<T>
+where
+    T: Std140ArrayElement + fmt::Debug,
+{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         <T as fmt::Debug>::fmt(&self.element, f)
     }
@@ -855,6 +861,155 @@ impl IndexMut<usize> for bvec4 {
     }
 }
 
+/// A 64-bit floating point value.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::double(0.5);
+/// ```
+#[repr(C, align(8))]
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub struct double(pub f64);
+
+unsafe impl ReprStd140 for double {}
+unsafe impl Std140ArrayElement for double {}
+
+/// A column vector of 2 [double] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dvec2(0.0, 1.0);
+/// ```
+#[repr(C, align(16))]
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub struct dvec2(pub f64, pub f64);
+
+impl dvec2 {
+    /// Creates a new [dvec2] with zeros in all positions.
+    pub fn zero() -> Self {
+        dvec2(0.0, 0.0)
+    }
+}
+
+unsafe impl ReprStd140 for dvec2 {}
+unsafe impl Std140ArrayElement for dvec2 {}
+
+impl Index<usize> for dvec2 {
+    type Output = f64;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.0,
+            1 => &self.1,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+
+impl IndexMut<usize> for dvec2 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => &mut self.0,
+            1 => &mut self.1,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+
+/// A column vector of 3 [double] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dvec3(0.0, 0.0, 1.0);
+/// ```
+#[repr(C, align(32))]
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub struct dvec3(pub f64, pub f64, pub f64);
+
+impl dvec3 {
+    /// Creates a new [dvec3] with zeros in all positions.
+    pub fn zero() -> Self {
+        dvec3(0.0, 0.0, 0.0)
+    }
+}
+
+unsafe impl ReprStd140 for dvec3 {}
+unsafe impl Std140ArrayElement for dvec3 {}
+
+impl Index<usize> for dvec3 {
+    type Output = f64;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.0,
+            1 => &self.1,
+            2 => &self.2,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+
+impl IndexMut<usize> for dvec3 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => &mut self.0,
+            1 => &mut self.1,
+            2 => &mut self.2,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+
+/// A column vector of 4 [double] values.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dvec4(0.0, 0.0, 0.0, 1.0);
+/// ```
+#[repr(C, align(32))]
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub struct dvec4(pub f64, pub f64, pub f64, pub f64);
+
+impl dvec4 {
+    /// Creates a new [dvec4] with zeros in all positions.
+    pub fn zero() -> Self {
+        dvec4(0.0, 0.0, 0.0, 0.0)
+    }
+}
+
+unsafe impl ReprStd140 for dvec4 {}
+unsafe impl Std140ArrayElement for dvec4 {}
+
+impl Index<usize> for dvec4 {
+    type Output = f64;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.0,
+            1 => &self.1,
+            2 => &self.2,
+            3 => &self.3,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+
+impl IndexMut<usize> for dvec4 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => &mut self.0,
+            1 => &mut self.1,
+            2 => &mut self.2,
+            3 => &mut self.3,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+
 /// A matrix with 2 columns and 2 rows, represented by 2 [vec2] vectors.
 ///
 /// # Example
@@ -1365,5 +1520,518 @@ impl DerefMut for mat4x4 {
 impl fmt::Debug for mat4x4 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_fmt(format_args!("mat4x4{:?}", &self.columns))
+    }
+}
+
+/// A matrix with 2 columns and 2 rows, represented by 2 [dvec2] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dmat2x2(
+///     std140::dvec2(0.0, 1.0),
+///     std140::dvec2(0.0, 1.0),
+/// );
+/// ```
+#[derive(Clone, Copy, PartialEq)]
+pub struct dmat2x2 {
+    columns: array<dvec2, 2>,
+}
+
+impl dmat2x2 {
+    /// Creates a new [dmat2x2] with zeros in all positions.
+    pub fn zero() -> Self {
+        dmat2x2(dvec2::zero(), dvec2::zero())
+    }
+}
+
+/// Initializes a [dmat2x2][struct@dmat2x2]
+///
+/// # Example
+///
+/// See [dmat2x2][struct@dmat2x2].
+pub fn dmat2x2(c0: dvec2, c1: dvec2) -> dmat2x2 {
+    dmat2x2 {
+        columns: array![c0, c1],
+    }
+}
+
+unsafe impl ReprStd140 for dmat2x2 {}
+unsafe impl Std140ArrayElement for dmat2x2 {}
+
+impl Deref for dmat2x2 {
+    type Target = array<dvec2, 2>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.columns
+    }
+}
+
+impl DerefMut for dmat2x2 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.columns
+    }
+}
+
+impl fmt::Debug for dmat2x2 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("dmat2x2{:?}", &self.columns))
+    }
+}
+
+/// A matrix with 2 columns and 3 rows, represented by 2 [dvec3] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dmat2x3(
+///     std140::dvec3(0.0, 0.0, 1.0),
+///     std140::dvec3(0.0, 0.0, 1.0),
+/// );
+/// ```
+#[derive(Clone, Copy, PartialEq)]
+pub struct dmat2x3 {
+    columns: array<dvec3, 2>,
+}
+
+impl dmat2x3 {
+    /// Creates a new [dmat2x3] with zeros in all positions.
+    pub fn zero() -> Self {
+        dmat2x3(dvec3::zero(), dvec3::zero())
+    }
+}
+
+/// Initializes a [dmat2x3][struct@dmat2x3]
+///
+/// # Example
+///
+/// See [dmat2x3][struct@dmat2x3].
+pub fn dmat2x3(c0: dvec3, c1: dvec3) -> dmat2x3 {
+    dmat2x3 {
+        columns: array![c0, c1],
+    }
+}
+
+unsafe impl ReprStd140 for dmat2x3 {}
+unsafe impl Std140ArrayElement for dmat2x3 {}
+
+impl Deref for dmat2x3 {
+    type Target = array<dvec3, 2>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.columns
+    }
+}
+
+impl DerefMut for dmat2x3 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.columns
+    }
+}
+
+impl fmt::Debug for dmat2x3 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("dmat2x3{:?}", &self.columns))
+    }
+}
+
+/// A matrix with 2 columns and 4 rows, represented by 2 [dvec4] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dmat2x4(
+///     std140::dvec4(0.0, 0.0, 0.0, 1.0),
+///     std140::dvec4(0.0, 0.0, 0.0, 1.0),
+/// );
+/// ```
+#[derive(Clone, Copy, PartialEq)]
+pub struct dmat2x4 {
+    columns: array<dvec4, 2>,
+}
+
+impl dmat2x4 {
+    /// Creates a new [dmat2x4] with zeros in all positions.
+    pub fn zero() -> Self {
+        dmat2x4(dvec4::zero(), dvec4::zero())
+    }
+}
+
+/// Initializes a [dmat2x4][struct@dmat2x4]
+///
+/// # Example
+///
+/// See [dmat2x4][struct@dmat2x4].
+pub fn dmat2x4(c0: dvec4, c1: dvec4) -> dmat2x4 {
+    dmat2x4 {
+        columns: array![c0, c1],
+    }
+}
+
+unsafe impl ReprStd140 for dmat2x4 {}
+unsafe impl Std140ArrayElement for dmat2x4 {}
+
+impl Deref for dmat2x4 {
+    type Target = array<dvec4, 2>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.columns
+    }
+}
+
+impl DerefMut for dmat2x4 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.columns
+    }
+}
+
+impl fmt::Debug for dmat2x4 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("dmat2x4{:?}", &self.columns))
+    }
+}
+
+/// A matrix with 3 columns and 2 rows, represented by 3 [dvec2] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dmat3x2(
+///     std140::dvec2(0.0, 1.0),
+///     std140::dvec2(0.0, 1.0),
+///     std140::dvec2(0.0, 1.0),
+/// );
+/// ```
+#[derive(Clone, Copy, PartialEq)]
+pub struct dmat3x2 {
+    columns: array<dvec2, 3>,
+}
+
+impl dmat3x2 {
+    /// Creates a new [dmat3x2] with zeros in all positions.
+    pub fn zero() -> Self {
+        dmat3x2(dvec2::zero(), dvec2::zero(), dvec2::zero())
+    }
+}
+
+/// Initializes a [dmat3x2][struct@dmat3x2]
+///
+/// # Example
+///
+/// See [dmat3x2][struct@dmat3x2].
+pub fn dmat3x2(c0: dvec2, c1: dvec2, c2: dvec2) -> dmat3x2 {
+    dmat3x2 {
+        columns: array![c0, c1, c2],
+    }
+}
+
+unsafe impl ReprStd140 for dmat3x2 {}
+unsafe impl Std140ArrayElement for dmat3x2 {}
+
+impl Deref for dmat3x2 {
+    type Target = array<dvec2, 3>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.columns
+    }
+}
+
+impl DerefMut for dmat3x2 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.columns
+    }
+}
+
+impl fmt::Debug for dmat3x2 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("dmat3x2{:?}", &self.columns))
+    }
+}
+
+/// A matrix with 3 columns and 3 rows, represented by 3 [dvec3] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dmat3x3(
+///     std140::dvec3(0.0, 0.0, 1.0),
+///     std140::dvec3(0.0, 0.0, 1.0),
+///     std140::dvec3(0.0, 0.0, 1.0),
+/// );
+/// ```
+#[derive(Clone, Copy, PartialEq)]
+pub struct dmat3x3 {
+    columns: array<dvec3, 3>,
+}
+
+impl dmat3x3 {
+    /// Creates a new [dmat3x3] with zeros in all positions.
+    pub fn zero() -> Self {
+        dmat3x3(dvec3::zero(), dvec3::zero(), dvec3::zero())
+    }
+}
+
+/// Initializes a [dmat3x3][struct@dmat3x3]
+///
+/// # Example
+///
+/// See [dmat3x3][struct@dmat3x3].
+pub fn dmat3x3(c0: dvec3, c1: dvec3, c2: dvec3) -> dmat3x3 {
+    dmat3x3 {
+        columns: array![c0, c1, c2],
+    }
+}
+
+unsafe impl ReprStd140 for dmat3x3 {}
+unsafe impl Std140ArrayElement for dmat3x3 {}
+
+impl Deref for dmat3x3 {
+    type Target = array<dvec3, 3>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.columns
+    }
+}
+
+impl DerefMut for dmat3x3 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.columns
+    }
+}
+
+impl fmt::Debug for dmat3x3 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("dmat3x3{:?}", &self.columns))
+    }
+}
+
+/// A matrix with 3 columns and 4 rows, represented by 3 [dvec4] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dmat3x4(
+///     std140::dvec4(0.0, 0.0, 0.0, 1.0),
+///     std140::dvec4(0.0, 0.0, 0.0, 1.0),
+///     std140::dvec4(0.0, 0.0, 0.0, 1.0),
+/// );
+/// ```
+#[derive(Clone, Copy, PartialEq)]
+pub struct dmat3x4 {
+    columns: array<dvec4, 3>,
+}
+
+impl dmat3x4 {
+    /// Creates a new [dmat3x4] with zeros in all positions.
+    pub fn zero() -> Self {
+        dmat3x4(dvec4::zero(), dvec4::zero(), dvec4::zero())
+    }
+}
+
+/// Initializes a [dmat3x4][struct@dmat3x4]
+///
+/// # Example
+///
+/// See [dmat3x4][struct@dmat3x4].
+pub fn dmat3x4(c0: dvec4, c1: dvec4, c2: dvec4) -> dmat3x4 {
+    dmat3x4 {
+        columns: array![c0, c1, c2],
+    }
+}
+
+unsafe impl ReprStd140 for dmat3x4 {}
+unsafe impl Std140ArrayElement for dmat3x4 {}
+
+impl Deref for dmat3x4 {
+    type Target = array<dvec4, 3>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.columns
+    }
+}
+
+impl DerefMut for dmat3x4 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.columns
+    }
+}
+
+impl fmt::Debug for dmat3x4 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("dmat3x4{:?}", &self.columns))
+    }
+}
+
+/// A matrix with 4 columns and 2 rows, represented by 4 [dvec2] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dmat4x2(
+///     std140::dvec2(0.0, 1.0),
+///     std140::dvec2(0.0, 1.0),
+///     std140::dvec2(0.0, 1.0),
+///     std140::dvec2(0.0, 1.0),
+/// );
+/// ```
+#[derive(Clone, Copy, PartialEq)]
+pub struct dmat4x2 {
+    columns: array<dvec2, 4>,
+}
+
+impl dmat4x2 {
+    /// Creates a new [dmat4x2] with zeros in all positions.
+    pub fn zero() -> Self {
+        dmat4x2(dvec2::zero(), dvec2::zero(), dvec2::zero(), dvec2::zero())
+    }
+}
+
+/// Initializes a [dmat4x2][struct@dmat4x2]
+///
+/// # Example
+///
+/// See [dmat4x2][struct@dmat4x2].
+pub fn dmat4x2(c0: dvec2, c1: dvec2, c2: dvec2, c3: dvec2) -> dmat4x2 {
+    dmat4x2 {
+        columns: array![c0, c1, c2, c3],
+    }
+}
+
+unsafe impl ReprStd140 for dmat4x2 {}
+unsafe impl Std140ArrayElement for dmat4x2 {}
+
+impl Deref for dmat4x2 {
+    type Target = array<dvec2, 4>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.columns
+    }
+}
+
+impl DerefMut for dmat4x2 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.columns
+    }
+}
+
+impl fmt::Debug for dmat4x2 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("dmat4x2{:?}", &self.columns))
+    }
+}
+
+/// A matrix with 4 columns and 3 rows, represented by 4 [dvec3] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dmat4x3(
+///     std140::dvec3(0.0, 0.0, 1.0),
+///     std140::dvec3(0.0, 0.0, 1.0),
+///     std140::dvec3(0.0, 0.0, 1.0),
+///     std140::dvec3(0.0, 0.0, 1.0),
+/// );
+/// ```
+#[derive(Clone, Copy, PartialEq)]
+pub struct dmat4x3 {
+    columns: array<dvec3, 4>,
+}
+
+impl dmat4x3 {
+    /// Creates a new [dmat4x3] with zeros in all positions.
+    pub fn zero() -> Self {
+        dmat4x3(dvec3::zero(), dvec3::zero(), dvec3::zero(), dvec3::zero())
+    }
+}
+
+/// Initializes a [dmat4x3][struct@dmat4x3]
+///
+/// # Example
+///
+/// See [dmat4x3][struct@dmat4x3].
+pub fn dmat4x3(c0: dvec3, c1: dvec3, c2: dvec3, c3: dvec3) -> dmat4x3 {
+    dmat4x3 {
+        columns: array![c0, c1, c2, c3],
+    }
+}
+
+unsafe impl ReprStd140 for dmat4x3 {}
+unsafe impl Std140ArrayElement for dmat4x3 {}
+
+impl Deref for dmat4x3 {
+    type Target = array<dvec3, 4>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.columns
+    }
+}
+
+impl DerefMut for dmat4x3 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.columns
+    }
+}
+
+impl fmt::Debug for dmat4x3 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("dmat4x3{:?}", &self.columns))
+    }
+}
+
+/// A matrix with 4 columns and 4 rows, represented by 4 [dvec4] vectors.
+///
+/// # Example
+///
+/// ```
+/// let value = std140::dmat4x4(
+///     std140::dvec4(0.0, 0.0, 0.0, 1.0),
+///     std140::dvec4(0.0, 0.0, 0.0, 1.0),
+///     std140::dvec4(0.0, 0.0, 0.0, 1.0),
+///     std140::dvec4(0.0, 0.0, 0.0, 1.0),
+/// );
+/// ```
+#[derive(Clone, Copy, PartialEq)]
+pub struct dmat4x4 {
+    columns: array<dvec4, 4>,
+}
+
+impl dmat4x4 {
+    /// Creates a new [dmat4x4] with zeros in all positions.
+    pub fn zero() -> Self {
+        dmat4x4(dvec4::zero(), dvec4::zero(), dvec4::zero(), dvec4::zero())
+    }
+}
+
+/// Initializes a [dmat4x4][struct@dmat4x4]
+///
+/// # Example
+///
+/// See [dmat4x4][struct@dmat4x4].
+pub fn dmat4x4(c0: dvec4, c1: dvec4, c2: dvec4, c3: dvec4) -> dmat4x4 {
+    dmat4x4 {
+        columns: array![c0, c1, c2, c3],
+    }
+}
+
+unsafe impl ReprStd140 for dmat4x4 {}
+unsafe impl Std140ArrayElement for dmat4x4 {}
+
+impl Deref for dmat4x4 {
+    type Target = array<dvec4, 4>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.columns
+    }
+}
+
+impl DerefMut for dmat4x4 {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.columns
+    }
+}
+
+impl fmt::Debug for dmat4x4 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("dmat4x4{:?}", &self.columns))
     }
 }
