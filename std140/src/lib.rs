@@ -1026,7 +1026,7 @@ pub struct mat2x2 {
 }
 
 impl mat2x2 {
-    /// Creates a new [mat2x2] with zeros in all positions.
+    /// Creates a new [struct@mat2x2] with zeros in all positions.
     pub fn zero() -> Self {
         mat2x2(vec2::zero(), vec2::zero())
     }
@@ -1082,7 +1082,7 @@ pub struct mat2x3 {
 }
 
 impl mat2x3 {
-    /// Creates a new [mat2x3] with zeros in all positions.
+    /// Creates a new [struct@mat2x3] with zeros in all positions.
     pub fn zero() -> Self {
         mat2x3(vec3::zero(), vec3::zero())
     }
@@ -1138,7 +1138,7 @@ pub struct mat2x4 {
 }
 
 impl mat2x4 {
-    /// Creates a new [mat2x4] with zeros in all positions.
+    /// Creates a new [struct@mat2x4] with zeros in all positions.
     pub fn zero() -> Self {
         mat2x4(vec4::zero(), vec4::zero())
     }
@@ -1195,7 +1195,7 @@ pub struct mat3x2 {
 }
 
 impl mat3x2 {
-    /// Creates a new [mat3x2] with zeros in all positions.
+    /// Creates a new [struct@mat3x2] with zeros in all positions.
     pub fn zero() -> Self {
         mat3x2(vec2::zero(), vec2::zero(), vec2::zero())
     }
@@ -1252,7 +1252,7 @@ pub struct mat3x3 {
 }
 
 impl mat3x3 {
-    /// Creates a new [mat3x3] with zeros in all positions.
+    /// Creates a new [struct@mat3x3] with zeros in all positions.
     pub fn zero() -> Self {
         mat3x3(vec3::zero(), vec3::zero(), vec3::zero())
     }
@@ -1309,7 +1309,7 @@ pub struct mat3x4 {
 }
 
 impl mat3x4 {
-    /// Creates a new [mat3x4] with zeros in all positions.
+    /// Creates a new [struct@mat3x4] with zeros in all positions.
     pub fn zero() -> Self {
         mat3x4(vec4::zero(), vec4::zero(), vec4::zero())
     }
@@ -1367,7 +1367,7 @@ pub struct mat4x2 {
 }
 
 impl mat4x2 {
-    /// Creates a new [mat4x2] with zeros in all positions.
+    /// Creates a new [struct@mat4x2] with zeros in all positions.
     pub fn zero() -> Self {
         mat4x2(vec2::zero(), vec2::zero(), vec2::zero(), vec2::zero())
     }
@@ -1425,7 +1425,7 @@ pub struct mat4x3 {
 }
 
 impl mat4x3 {
-    /// Creates a new [mat4x3] with zeros in all positions.
+    /// Creates a new [struct@mat4x3] with zeros in all positions.
     pub fn zero() -> Self {
         mat4x3(vec3::zero(), vec3::zero(), vec3::zero(), vec3::zero())
     }
@@ -1483,7 +1483,7 @@ pub struct mat4x4 {
 }
 
 impl mat4x4 {
-    /// Creates a new [mat4x4] with zeros in all positions.
+    /// Creates a new [struct@mat4x4] with zeros in all positions.
     pub fn zero() -> Self {
         mat4x4(vec4::zero(), vec4::zero(), vec4::zero(), vec4::zero())
     }
@@ -1539,7 +1539,7 @@ pub struct dmat2x2 {
 }
 
 impl dmat2x2 {
-    /// Creates a new [dmat2x2] with zeros in all positions.
+    /// Creates a new [struct@dmat2x2] with zeros in all positions.
     pub fn zero() -> Self {
         dmat2x2(dvec2::zero(), dvec2::zero())
     }
@@ -1595,7 +1595,7 @@ pub struct dmat2x3 {
 }
 
 impl dmat2x3 {
-    /// Creates a new [dmat2x3] with zeros in all positions.
+    /// Creates a new [struct@dmat2x3] with zeros in all positions.
     pub fn zero() -> Self {
         dmat2x3(dvec3::zero(), dvec3::zero())
     }
@@ -1651,7 +1651,7 @@ pub struct dmat2x4 {
 }
 
 impl dmat2x4 {
-    /// Creates a new [dmat2x4] with zeros in all positions.
+    /// Creates a new [struct@dmat2x4] with zeros in all positions.
     pub fn zero() -> Self {
         dmat2x4(dvec4::zero(), dvec4::zero())
     }
@@ -1708,7 +1708,7 @@ pub struct dmat3x2 {
 }
 
 impl dmat3x2 {
-    /// Creates a new [dmat3x2] with zeros in all positions.
+    /// Creates a new [struct@dmat3x2] with zeros in all positions.
     pub fn zero() -> Self {
         dmat3x2(dvec2::zero(), dvec2::zero(), dvec2::zero())
     }
@@ -1765,7 +1765,7 @@ pub struct dmat3x3 {
 }
 
 impl dmat3x3 {
-    /// Creates a new [dmat3x3] with zeros in all positions.
+    /// Creates a new [struct@dmat3x3] with zeros in all positions.
     pub fn zero() -> Self {
         dmat3x3(dvec3::zero(), dvec3::zero(), dvec3::zero())
     }
@@ -1822,7 +1822,7 @@ pub struct dmat3x4 {
 }
 
 impl dmat3x4 {
-    /// Creates a new [dmat3x4] with zeros in all positions.
+    /// Creates a new [struct@dmat3x4] with zeros in all positions.
     pub fn zero() -> Self {
         dmat3x4(dvec4::zero(), dvec4::zero(), dvec4::zero())
     }
@@ -1880,7 +1880,7 @@ pub struct dmat4x2 {
 }
 
 impl dmat4x2 {
-    /// Creates a new [dmat4x2] with zeros in all positions.
+    /// Creates a new [struct@dmat4x2] with zeros in all positions.
     pub fn zero() -> Self {
         dmat4x2(dvec2::zero(), dvec2::zero(), dvec2::zero(), dvec2::zero())
     }
@@ -1938,7 +1938,7 @@ pub struct dmat4x3 {
 }
 
 impl dmat4x3 {
-    /// Creates a new [dmat4x3] with zeros in all positions.
+    /// Creates a new [struct@dmat4x3] with zeros in all positions.
     pub fn zero() -> Self {
         dmat4x3(dvec3::zero(), dvec3::zero(), dvec3::zero(), dvec3::zero())
     }
@@ -1996,7 +1996,7 @@ pub struct dmat4x4 {
 }
 
 impl dmat4x4 {
-    /// Creates a new [dmat4x4] with zeros in all positions.
+    /// Creates a new [struct@dmat4x4] with zeros in all positions.
     pub fn zero() -> Self {
         dmat4x4(dvec4::zero(), dvec4::zero(), dvec4::zero(), dvec4::zero())
     }
